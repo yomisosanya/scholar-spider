@@ -44,6 +44,9 @@ async def visit(*, uri: str, page: Page) -> Awaitable[Union[Response, None]]:
     return page.goto(uri=uri, wait_until='domcontentloaded')
 
 async def search(page: Page, text: str) -> Awaitable[Locator]:
+    """
+    Automates the browser the send the query passed to it
+    """
     selector: str = 'imput[name="q"]'
     await page.fill(selector, text)
     await page.press(selector, 'Enter')
@@ -52,21 +55,18 @@ async def search(page: Page, text: str) -> Awaitable[Locator]:
     return page.locator(result_selector)
 
 async def parse_result(items: Locator) -> Awaitable[Dict[str, str]]:
+    """
+    Parse the HTML node passed to it and returns a dict 
+    """
     values: Dict[str, str] = {}
     results: List[Locator] = items.all()
     async for result in results:
-        title: Locator = await result.locator('div.gs_rt')
-        # resolve title
-        author: Locator = await result.locator('div.ge_a')
-        # resolve author
-        abstract: Locator = await result.locator('div.gs_rs')
-        # resolve abstract
-        citations: Locator = await result.get_by_role('link', name='Cited by')
-        # resolve citation
-        year: Locator = await result.locator('.gs_age')
-        # resolve year
-        url: Locator = await result.locator('h3.gs_rt a')
-        values['url'] = await url.get_attribute('href') or ''
+        values['title'] = await result.locator('div.gs_rt').text_content() or 'No title'
+        values['author'] = await result.locator('div.ge_a').text_content() or 'No author'
+        values['abstract'] = await result.locator('div.gs_rs').text_content() or 'No abstract'
+        values['citations'] = await result.get_by_role('link', name='Cited by').text_content() or ''
+        values['year'] = await result.locator('.gs_age').text_content() or ''
+        values['url'] = await result.locator('h3.gs_rt a').get_attribute('href') or ''
     return values
 
 async def main():
