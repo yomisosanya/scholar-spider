@@ -1,9 +1,9 @@
 import asyncio, re
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Iterable
 from enum import auto, Enum
-from typing import AnyStr, Dict, List, Union
+from typing import AnyStr, Coroutine, Dict, List, Union, Tuple
 from playwright.async_api import async_playwright, Browser, \
-    BrowserContext, BrowserType, Locator, Page, Playwright, Response
+    BrowserContext, BrowserType, expect, Locator, Page, Playwright, Response
 
 class BrowserChoice(Enum):
     chromium = auto()
@@ -44,41 +44,47 @@ async def visit(*, uri: str, page: Page) -> Awaitable[Union[Response, None]]:
     # await page.route(pattern, lambda route: route.abort())
     return await page.goto(url=uri, wait_until='domcontentloaded')
 
-async def search(page: Page, text: str) -> Awaitable[Locator]:
+async def search(page: Page, text: str) -> Awaitable[List[Locator]]:
     """
     Automates the browser the send the query passed to it
     """
     #TODO: needs work
     input: Locator = page.locator('#gs_hdr_tsi')
     await input.press_sequentially(text, delay=10)
-    print('Query input: ', text)
+    print('Query input: ', text) 
     submit: Locator = page.locator('#gs_hdr_tsb')
     await submit.click()
     print('Query submitted')
     result_selector: str = 'div.gs_ri'
-    result_page: Locator = page.locator('div.gs_ri')
+    result: Locator = page.locator('div.gs_ri')
     # await result_page.wait_for(state='attached', timeout=50000)
-    await page.wait_for_selector(result_selector, timeout=50000)
-    return result_page
+    # await page.wait_for_selector(result_selector, timeout=50000)
+    # await expect(result_page).to_be_attached()
+    return await result.all()
 
-async def parse_result(items: Locator) -> Awaitable[Dict[str, str]]:
+
+async def parse_result(items: List[Locator]) -> Awaitable[ List[ List[ Tuple[str, str]]]]:
     """
     Parse the HTML node passed to it and returns a dict 
     """
-    values: Dict[str, str] = {}
-    results: List[Locator] = await items.all()
-    for result in results:
-        title: Locator = result.locator('div.gs_rt')
-        await title.wait_for(state='attached')
-        # values['title'] = await result.locator('div.gs_rt').inner_text() # or 'No title'
-        values['title'] = await title.inner_text()
+    seq: List[ List[ Tuple[ str, str]]] = []
+    for result in items:
+        group: List[ Tuple[ str, str]] = []
+        await asyncio.sleep(0)
+        print('title: ', await result.all_inner_texts())
+        # content: str = await result.filter()
+        title: Tuple[str, str] = 'title', await result.filter(has=result.locator('div.gs_rt')).all_inner_texts() or 'No title'
+        seq.append(title)
         print('title written')
-        # values['author'] = await result.locator('div.ge_a').text_content() or 'No author'
-        # values['abstract'] = await result.locator('div.gs_rs').text_content() or 'No abstract'
+        author: Tuple[str, str] = 'author', await result.filter(has=result.locator('div.ge_a')).all_inner_texts() or 'No author'
+        seq.append(author)
+        abstract = 'abstract', await result.locator('div.gs_rs').all_inner_texts() or 'No abstract'
+        seq.append(abstract)
         # values['citations'] = await result.get_by_role('link', name='Cited by').text_content() or ''
         # values['year'] = await result.locator('.gs_age').text_content() or ''
-        values['url'] = await result.locator('h3.gs_rt a').get_attribute('href') or ''
-    return values
+        # values['url'] = await result.locator('h3.gs_rt a').get_attribute('href') or ''
+        seq.append(group)
+    return seq
 
 def display(item: any, filename: str) -> None:
     with open(filename, 'a') as f:
@@ -99,11 +105,14 @@ async def main() -> None:
         else:
             print("Success, status: ", res.status)
         query: str = 'hpcc cuny'
-        results = await search(page, query)
+        results: List[Locator] = await search(page, query)
         print('Results obtained')
-        items = await results.all()
-        print(items[:3])
-        # content: Dict[str, str] = await parse_result(results)
+        # items = await results.all()
+        # print('there are ', len(items), ' items')
+        # content:List[str] = await items[0].all_inner_texts()
+        # print('inner-text count: ', len(content))
+        # print(content[:3])
+        content: Dict[str, str] = await parse_result(results)
         print('results parsed')
         # clean up
         await browser.close()
