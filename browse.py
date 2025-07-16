@@ -1,9 +1,10 @@
-import asyncio, re
+import asyncio, inspect, re
+from collections import OrderedDict
 from collections.abc import Awaitable, Iterable
 from enum import auto, Enum
-from typing import AnyStr, Coroutine, Dict, List, Union, Tuple
+from typing import Any, AsyncGenerator, Coroutine, Dict, List, Union, Tuple
 from playwright.async_api import async_playwright, Browser, \
-    BrowserContext, BrowserType, expect, Locator, Page, Playwright, Response
+    BrowserContext, BrowserType, Locator, Page, Playwright, Response
 
 class BrowserChoice(Enum):
     chromium = auto()
@@ -55,12 +56,30 @@ async def search(page: Page, text: str) -> Awaitable[List[Locator]]:
     submit: Locator = page.locator('#gs_hdr_tsb')
     await submit.click()
     print('Query submitted')
-    result_selector: str = 'div.gs_ri'
+    # result_selector: str = 'div.gs_ri'
     result: Locator = page.locator('div.gs_ri')
     # await result_page.wait_for(state='attached', timeout=50000)
     # await page.wait_for_selector(result_selector, timeout=50000)
     # await expect(result_page).to_be_attached()
     return await result.all()
+
+async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], None]:
+    await asyncio.sleep(0)
+    link: Locator = node.locator('h3.gs_rt a')
+    title: str = await link.all_inner_texts()
+    yield 'title', title
+    url: str = 'url', await link.get_attribute('href') or ''
+    yield 'url', url
+    authors: List[str] = await node.locator('div.gs_a').all_inner_texts() or []
+    yield 'authors', authors
+    summary: List[str] = await node.locator('div.gs_rs').all_inner_texts() or []
+    yield 'summary', summary
+    citedby: List[str] = await node.get_by_role('link', name='Cited by').all_inner_texts() or []
+    yield 'cite-by', citedby
+
+async def parse_groups(nodes: List[Locator]) -> Coroutine[Any, Any, List[ Dict[ str, str]]]:
+    return [{k: v async for k, v in parse_group(node)} for node in nodes]
+
 
 
 async def parse_result(items: List[Locator]) -> Awaitable[ List[ List[ Tuple[str, str]]]]:
@@ -73,16 +92,27 @@ async def parse_result(items: List[Locator]) -> Awaitable[ List[ List[ Tuple[str
         await asyncio.sleep(0)
         print('title: ', await result.all_inner_texts())
         # content: str = await result.filter()
-        title: Tuple[str, str] = 'title', await result.filter(has=result.locator('div.gs_rt')).all_inner_texts() or 'No title'
-        seq.append(title)
+        # title doesn't work
+        tgroup: Locator = result.locator('h3.gs_rt a')
+        title: Tuple[str, str] = 'title', await tgroup.text_content() or 'No title'
+        group.append(title)
         print('title written')
-        author: Tuple[str, str] = 'author', await result.filter(has=result.locator('div.ge_a')).all_inner_texts() or 'No author'
-        seq.append(author)
-        abstract = 'abstract', await result.locator('div.gs_rs').all_inner_texts() or 'No abstract'
-        seq.append(abstract)
-        # values['citations'] = await result.get_by_role('link', name='Cited by').text_content() or ''
-        # values['year'] = await result.locator('.gs_age').text_content() or ''
-        # values['url'] = await result.locator('h3.gs_rt a').get_attribute('href') or ''
+        # author doesn't work
+        author: Tuple[str, str] = 'author', await result.locator('div.gs_a').all_inner_texts() or []
+        group.append(author)
+        # abstract works
+        abstract = 'abstract', await result.locator('div.gs_rs').all_inner_texts() or []
+        group.append(abstract)
+        # citation works
+        citation = 'citations', await result.get_by_role('link', name='Cited by').all_inner_texts() or []
+        group.append(citation)
+        # # year doesn't work
+        # year = 'year', await result.locator('.gs_age').all_inner_texts() or ''
+        # group.append(year)
+        # url works
+        # url = 'url', await result.locator('h3.gs_rt a').get_attribute('href') or ''
+        url = 'url', await tgroup.get_attribute('href') or ''
+        group.append(url)
         seq.append(group)
     return seq
 
@@ -104,16 +134,30 @@ async def main() -> None:
             return
         else:
             print("Success, status: ", res.status)
+        # make sure the page loads fully
+        await page.wait_for_load_state('domcontentloaded')
+        print(await res.headers_array())
         query: str = 'hpcc cuny'
         results: List[Locator] = await search(page, query)
         print('Results obtained')
+        assert len(results) > 0, 'Search returned no locators'
+        # output = await parse_result(results)
+        output = await parse_groups(results)
+        print('/n/n/n')
+        print(output)
         # items = await results.all()
         # print('there are ', len(items), ' items')
         # content:List[str] = await items[0].all_inner_texts()
         # print('inner-text count: ', len(content))
         # print(content[:3])
-        content: Dict[str, str] = await parse_result(results)
-        print('results parsed')
+        # content: List[Dict[str, str]] = await parse_groups(results)
+        # # testing
+        # print('type: ', type(results))
+        # print('size: ', len(results))
+        # print(results)
+        # content = await parse_group(results[0])
+        # print('results parsed')
+        # print(content)
         # clean up
         await browser.close()
         # display(content, 'output.txt')
