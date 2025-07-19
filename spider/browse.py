@@ -120,48 +120,48 @@ def display(item: any, filename: str) -> None:
     with open(filename, 'a') as f:
         print(item, file=f)
 
-async def main() -> None:
-    async with async_playwright() as app:
-        browser: Browser = await create_browser(BrowserChoice.chromium, app)
-        assert browser is not None, 'browser object is None'
-        uri: str = 'https://scholar.google.com'
-        page: Page = await create_page(browser)
-        assert page is not None, 'page object is None'
-        res: Response = await visit(uri=uri, page=page) 
-        if res is None:
-            # error message
-            print('Site visit failed')
-            return
-        else:
-            print("Success, status: ", res.status)
-        # make sure the page loads fully
-        await page.wait_for_load_state('domcontentloaded')
-        print(await res.headers_array())
-        query: str = 'hpcc cuny'
-        results: List[Locator] = await search(page, query)
-        print('Results obtained')
-        assert len(results) > 0, 'Search returned no locators'
-        # output = await parse_result(results)
-        output = await parse_groups(results)
-        print('/n/n/n')
-        print(output)
-        # items = await results.all()
-        # print('there are ', len(items), ' items')
-        # content:List[str] = await items[0].all_inner_texts()
-        # print('inner-text count: ', len(content))
-        # print(content[:3])
-        # content: List[Dict[str, str]] = await parse_groups(results)
-        # # testing
-        # print('type: ', type(results))
-        # print('size: ', len(results))
-        # print(results)
-        # content = await parse_group(results[0])
-        # print('results parsed')
-        # print(content)
-        # clean up
-        await browser.close()
-        # display(content, 'output.txt')
-        print('task completed')
+# async def main() -> None:
+#     async with async_playwright() as app:
+#         browser: Browser = await create_browser(BrowserChoice.chromium, app)
+#         assert browser is not None, 'browser object is None'
+#         uri: str = 'https://scholar.google.com'
+#         page: Page = await create_page(browser)
+#         assert page is not None, 'page object is None'
+#         res: Response = await visit(uri=uri, page=page) 
+#         if res is None:
+#             # error message
+#             print('Site visit failed')
+#             return
+#         else:
+#             print("Success, status: ", res.status)
+#         # make sure the page loads fully
+#         await page.wait_for_load_state('domcontentloaded')
+#         print(await res.headers_array())
+#         query: str = 'hpcc cuny'
+#         results: List[Locator] = await search(page, query)
+#         print('Results obtained')
+#         assert len(results) > 0, 'Search returned no locators'
+#         # output = await parse_result(results)
+#         output = await parse_groups(results)
+#         print('/n/n/n')
+#         print(output)
+#         # items = await results.all()
+#         # print('there are ', len(items), ' items')
+#         # content:List[str] = await items[0].all_inner_texts()
+#         # print('inner-text count: ', len(content))
+#         # print(content[:3])
+#         # content: List[Dict[str, str]] = await parse_groups(results)
+#         # # testing
+#         # print('type: ', type(results))
+#         # print('size: ', len(results))
+#         # print(results)
+#         # content = await parse_group(results[0])
+#         # print('results parsed')
+#         # print(content)
+#         # clean up
+#         await browser.close()
+#         # display(content, 'output.txt')
+#         print('task completed')
 
-if __name__ == '__main__': 
-    asyncio.run(main())
+# if __name__ == '__main__': 
+#     asyncio.run(main())
