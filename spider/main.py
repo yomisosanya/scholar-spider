@@ -6,6 +6,8 @@ from playwright.async_api import async_playwright, Browser, Locator, Page, Respo
 async def app(*, query: str) -> None:
     """
     """
+    # TODO: parameter should be a coroutine that returns a list of Locators
+    #
     async with async_playwright() as context:
         browser: Browser = await create_browser(BrowserChoice.chromium, context)
         assert browser is not None, 'browser was not created'
@@ -14,8 +16,8 @@ async def app(*, query: str) -> None:
         assert page is not None, 'a page was not created'
         res: Response = await visit(uri=uri, page=page)
         assert res is not None, 'possible network connection problems'
-        # continue only after the DOM loads
         await page.wait_for_load_state('domcontentloaded')
+        # search only after the DOM is loaded
         results: List[Locator] = await search(page, text=query)
         assert len(results) > 0, 'search did not return any locator'
         output = await parse_groups(results)

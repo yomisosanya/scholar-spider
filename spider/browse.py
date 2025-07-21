@@ -58,9 +58,6 @@ async def search(page: Page, text: str) -> Awaitable[List[Locator]]:
     print('Query submitted')
     # result_selector: str = 'div.gs_ri'
     result: Locator = page.locator('div.gs_ri')
-    # await result_page.wait_for(state='attached', timeout=50000)
-    # await page.wait_for_selector(result_selector, timeout=50000)
-    # await expect(result_page).to_be_attached()
     return await result.all()
 
 async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], None]:
@@ -131,7 +128,7 @@ def display(item: any, filename: str) -> None:
 #         if res is None:
 #             # error message
 #             print('Site visit failed')
-#             return
+#           
 #         else:
 #             print("Success, status: ", res.status)
 #         # make sure the page loads fully
