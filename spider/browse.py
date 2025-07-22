@@ -2,7 +2,7 @@ import asyncio, inspect, re
 from collections import OrderedDict
 from collections.abc import Awaitable, Iterable
 from enum import auto, Enum
-from typing import Any, AsyncGenerator, Coroutine, Dict, List, Union, Tuple
+from typing import Any, AsyncGenerator, Coroutine, Dict, List, Optional, Union, Tuple
 from playwright.async_api import async_playwright, Browser, \
     BrowserContext, BrowserType, Locator, Page, Playwright, Response
 
@@ -59,6 +59,19 @@ async def search(page: Page, text: str) -> Awaitable[List[Locator]]:
     # result_selector: str = 'div.gs_ri'
     result: Locator = page.locator('div.gs_ri')
     return await result.all()
+
+async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]]]:
+    await asyncio.sleep(0)
+    # nav: List[Locator] = await page.locator('#gs_n').locator('td').all()
+    # assert nav is not None, 'the navigator tags are missing'
+    # assert len(nav) > 0, 'the number of navigation tags is zero'
+    # # return [nav for nav in navs if nav.locator('span.gs_ico_nav_page')]
+    # f = filter(lambda n: n.locator('span.gs_ico_nav_page') is not None, nav)
+    # assert f is not None, 'filter return None, no navigation tags found'
+    # n = list(f)
+    # assert len(n) > 0, 'there are no navigators'
+    node: Locator = page.locator('#gs_n').locator('td').locator('.gs_ico_nav_page')
+    return await node.all()
 
 async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], None]:
     await asyncio.sleep(0)

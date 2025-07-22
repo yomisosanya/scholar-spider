@@ -1,6 +1,6 @@
 import asyncio
 from typing import List
-from browse import BrowserChoice, create_browser, create_page, parse_groups, search, visit
+from browse import BrowserChoice, create_browser, create_page, parse_groups, more_results, search, visit
 from playwright.async_api import async_playwright, Browser, Locator, Page, Response
 
 async def app(*, query: str) -> None:
@@ -22,7 +22,11 @@ async def app(*, query: str) -> None:
         assert len(results) > 0, 'search did not return any locator'
         output = await parse_groups(results)
         # display output
-        print(output)
+        # print(output)
+        print(output[2])
+        await asyncio.sleep(4)
+        nodes: List[Locator] = await more_results(page)
+        print(len(nodes))
 
 if __name__ == '__main__':
     query: str = 'hpcc cuny'
