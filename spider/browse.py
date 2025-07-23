@@ -1,11 +1,11 @@
-import asyncio, inspect, re
-from collections import OrderedDict
+import asyncio, re
+# from collections import OrderedDict
 from collections.abc import Awaitable, Iterable
 from enum import auto, Enum
 from typing import Any, AsyncGenerator, Coroutine, Dict, List, Optional, Union, Tuple
 from urllib.parse import urlparse
-from playwright.async_api import async_playwright, Browser, \
-    BrowserContext, BrowserType, Locator, Page, Playwright, Response
+from playwright.async_api import Browser, BrowserContext, BrowserType, Locator, Page, \
+Playwright, Response
 
 class BrowserChoice(Enum):
     chromium = auto()
@@ -36,64 +36,67 @@ async def create_page(browser: Browser, incognito: bool = False) -> Awaitable[Pa
     else:
         return await browser.new_page()
  
-async def visit(*, uri: str, page: Page) -> Awaitable[Union[Response, None]]:
+async def visit(*, uri: str, page: Page) -> Awaitable[Optional[Response]]:
     """
     A light-weight fetch that returns Response object 
     and tries not to open unecessary files
     """
-    # pattern: re.Pattern[AnyStr] = re.compile('**/*.{png,jpg,jpeg}')
-    # # don't load unneccesary files
-    # await page.route(pattern, lambda route: route.abort())
-    return await page.goto(url=uri, wait_until='domcontentloaded')
+    result: Optional[Response] = await page.goto(url=uri, wait_until='domcontentloaded')
+    await asyncio.sleep(0)
+    return result
 
 async def search(page: Page, text: str) -> Awaitable[List[Locator]]:
     """
     Automates the browser the send the query passed to it
     """
-    #TODO: needs work
     input: Locator = page.locator('#gs_hdr_tsi')
     await input.press_sequentially(text, delay=10)
-    print('Query input: ', text) 
+    # print('Query input: ', text) 
     submit: Locator = page.locator('#gs_hdr_tsb')
     await submit.click()
-    print('Query submitted')
-    # result_selector: str = 'div.gs_ri'
+    # print('Query submitted')
+    await page.wait_for_load_state('domcontentloaded')
     result: Locator = page.locator('div.gs_ri')
-    # await result.wait_for(state='attached')
     result: List[Locator] = await result.all()
     await asyncio.sleep(0)
     return result
 
-async def nav_url(nav: Locator) -> Optional[Tuple[ int, str]]:
+async def nav_url(link: Locator) -> Optional[Tuple[ int, str]]:
     """
+    It returns a tuple containing the page number and the page url of the 
+    navigation link locator
     """
-    link: Locator = nav.get_by_role('link')
     if bool(await link.count()):
         url: str = await link.get_attribute('href')
         content: str = await link.text_content()
         position: int = re.search(r'\d+', content).group(0)
-        path: str = url if bool(urlparse(url).netloc) else ''.join([nav.page.url, url])
+        path: str = url if bool(urlparse(url).netloc) else ''.join([link.page.url, url])
         return position, path
     return None
 
 async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]]]:
+    """
+    """
     await asyncio.sleep(0)
     parent: Locator = page.locator('#gs_n')
     every: Locator = parent.get_by_role('cell')
     if bool(await every.count()):
         # marker: Locator = every.locator('.gs_ico_nav_page')
         marker: Locator = every.get_by_role('link', name=re.compile(r'\d+'))
-        print('marker list size: ', await marker.count())
-        print(marker)
-        # await marker.wait_for(state='attached')
-        # some: Locator = every.filter(has=marker)
-        some: Locator = every.filter(has=marker)
-        print('result list size: ', await some.count())
-        # # await some.wait_for(state='attached')
-        return await every.all()
+        if bool(await marker.count()):
+            print('marker list size: ', await marker.count())
+            print(marker)
+            some: Locator = every.filter(has=marker)
+            print('result list size: ', await some.count())
+            # return await every.all()
+            results: List[Locator] = await marker.all()
+            await asyncio.sleep(0)
+            return results
     return []
 
 async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], None]:
+    """
+    """
     await asyncio.sleep(0)
     link: Locator = node.locator('h3.gs_rt a')
     title: str = await link.all_inner_texts()
@@ -108,6 +111,10 @@ async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], No
     yield 'cite-by', citedby
 
 async def parse_groups(nodes: List[Locator]) -> Coroutine[Any, Any, List[ Dict[ str, str]]]:
+    """
+    A helper coroutine for parsing a list of query results' locators. It uses parse_group
+    on each item on the list
+    """
     result = [{k: v async for k, v in parse_group(node)} for node in nodes]
     await asyncio.sleep(0)
     return result
@@ -151,49 +158,3 @@ async def parse_result(items: List[Locator]) -> Awaitable[ List[ List[ Tuple[str
 def display(item: any, filename: str) -> None:
     with open(filename, 'a') as f:
         print(item, file=f)
-
-# async def main() -> None:
-#     async with async_playwright() as app:
-#         browser: Browser = await create_browser(BrowserChoice.chromium, app)
-#         assert browser is not None, 'browser object is None'
-#         uri: str = 'https://scholar.google.com'
-#         page: Page = await create_page(browser)
-#         assert page is not None, 'page object is None'
-#         res: Response = await visit(uri=uri, page=page) 
-#         if res is None:
-#             # error message
-#             print('Site visit failed')
-#           
-#         else:
-#             print("Success, status: ", res.status)
-#         # make sure the page loads fully
-#         await page.wait_for_load_state('domcontentloaded')
-#         print(await res.headers_array())
-#         query: str = 'hpcc cuny'
-#         results: List[Locator] = await search(page, query)
-#         print('Results obtained')
-#         assert len(results) > 0, 'Search returned no locators'
-#         # output = await parse_result(results)
-#         output = await parse_groups(results)
-#         print('/n/n/n')
-#         print(output)
-#         # items = await results.all()
-#         # print('there are ', len(items), ' items')
-#         # content:List[str] = await items[0].all_inner_texts()
-#         # print('inner-text count: ', len(content))
-#         # print(content[:3])
-#         # content: List[Dict[str, str]] = await parse_groups(results)
-#         # # testing
-#         # print('type: ', type(results))
-#         # print('size: ', len(results))
-#         # print(results)
-#         # content = await parse_group(results[0])
-#         # print('results parsed')
-#         # print(content)
-#         # clean up
-#         await browser.close()
-#         # display(content, 'output.txt')
-#         print('task completed')
-
-# if __name__ == '__main__': 
-#     asyncio.run(main())
