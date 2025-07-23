@@ -1,7 +1,9 @@
 import asyncio
-from typing import List
-from browse import BrowserChoice, create_browser, create_page, parse_groups, more_results, search, visit
-from playwright.async_api import async_playwright, Browser, Locator, Page, Response
+from typing import List, Tuple
+from browse import BrowserChoice, create_browser, create_page, parse_groups, \
+more_results, nav_url, search, visit
+from playwright.async_api import async_playwright, Browser, Locator, Page, \
+Response
 
 async def app(*, query: str) -> None:
     """
@@ -19,15 +21,21 @@ async def app(*, query: str) -> None:
         await page.wait_for_load_state('domcontentloaded')
         # search only after the DOM is loaded
         results: List[Locator] = await search(page, text=query)
-        assert len(results) > 0, 'search did not return any locator'
-        output = await parse_groups(results)
+        assert results is not None, 'search returned None instead of a locator'
+        assert len(results) > 0, 'search returned an empt list of locators'
+        output: List[dict] = await parse_groups(results)
         # display output
         # print(output)
         print(output[2])
-        await asyncio.sleep(4)
+        await asyncio.sleep(0)
         nodes: List[Locator] = await more_results(page)
+        assert nodes is not None, 'more_result return None instead of an empty list' 
+        assert len(nodes) > 0, 'more_results returned an empty list'
         print(len(nodes))
+        item: Tuple[ int, str] = await nav_url(nodes[4])
+        print(item)
+
 
 if __name__ == '__main__':
-    query: str = 'hpcc cuny'
+    query: str = 'louis petingi'
     asyncio.run(app(query=query))

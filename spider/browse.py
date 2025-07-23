@@ -3,6 +3,7 @@ from collections import OrderedDict
 from collections.abc import Awaitable, Iterable
 from enum import auto, Enum
 from typing import Any, AsyncGenerator, Coroutine, Dict, List, Optional, Union, Tuple
+from urllib.parse import urlparse
 from playwright.async_api import async_playwright, Browser, \
     BrowserContext, BrowserType, Locator, Page, Playwright, Response
 
@@ -58,20 +59,39 @@ async def search(page: Page, text: str) -> Awaitable[List[Locator]]:
     print('Query submitted')
     # result_selector: str = 'div.gs_ri'
     result: Locator = page.locator('div.gs_ri')
-    return await result.all()
+    # await result.wait_for(state='attached')
+    result: List[Locator] = await result.all()
+    await asyncio.sleep(0)
+    return result
+
+async def nav_url(nav: Locator) -> Optional[Tuple[ int, str]]:
+    """
+    """
+    link: Locator = nav.get_by_role('link')
+    if bool(await link.count()):
+        url: str = await link.get_attribute('href')
+        content: str = await link.text_content()
+        position: int = re.search(r'\d+', content).group(0)
+        path: str = url if bool(urlparse(url).netloc) else ''.join([nav.page.url, url])
+        return position, path
+    return None
 
 async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]]]:
     await asyncio.sleep(0)
-    # nav: List[Locator] = await page.locator('#gs_n').locator('td').all()
-    # assert nav is not None, 'the navigator tags are missing'
-    # assert len(nav) > 0, 'the number of navigation tags is zero'
-    # # return [nav for nav in navs if nav.locator('span.gs_ico_nav_page')]
-    # f = filter(lambda n: n.locator('span.gs_ico_nav_page') is not None, nav)
-    # assert f is not None, 'filter return None, no navigation tags found'
-    # n = list(f)
-    # assert len(n) > 0, 'there are no navigators'
-    node: Locator = page.locator('#gs_n').locator('td').locator('.gs_ico_nav_page')
-    return await node.all()
+    parent: Locator = page.locator('#gs_n')
+    every: Locator = parent.get_by_role('cell')
+    if bool(await every.count()):
+        # marker: Locator = every.locator('.gs_ico_nav_page')
+        marker: Locator = every.get_by_role('link', name=re.compile(r'\d+'))
+        print('marker list size: ', await marker.count())
+        print(marker)
+        # await marker.wait_for(state='attached')
+        # some: Locator = every.filter(has=marker)
+        some: Locator = every.filter(has=marker)
+        print('result list size: ', await some.count())
+        # # await some.wait_for(state='attached')
+        return await every.all()
+    return []
 
 async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], None]:
     await asyncio.sleep(0)
@@ -88,7 +108,9 @@ async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], No
     yield 'cite-by', citedby
 
 async def parse_groups(nodes: List[Locator]) -> Coroutine[Any, Any, List[ Dict[ str, str]]]:
-    return [{k: v async for k, v in parse_group(node)} for node in nodes]
+    result = [{k: v async for k, v in parse_group(node)} for node in nodes]
+    await asyncio.sleep(0)
+    return result
 
 
 
