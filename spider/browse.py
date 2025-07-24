@@ -66,7 +66,7 @@ async def nav_url(link: Locator) -> Optional[Tuple[ int, str]]:
     It returns a tuple containing the page number and the page url of the 
     navigation link locator
     """
-    if bool(await link.count()):
+    if await link.count():
         url: str = await link.get_attribute('href')
         content: str = await link.text_content()
         position: int = re.search(r'\d+', content).group(0)
@@ -80,16 +80,13 @@ async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]
     await asyncio.sleep(0)
     parent: Locator = page.locator('#gs_n')
     every: Locator = parent.get_by_role('cell')
-    if bool(await every.count()):
+    if await every.count():
         # marker: Locator = every.locator('.gs_ico_nav_page')
-        marker: Locator = every.get_by_role('link', name=re.compile(r'\d+'))
-        if bool(await marker.count()):
-            print('marker list size: ', await marker.count())
-            print(marker)
-            some: Locator = every.filter(has=marker)
-            print('result list size: ', await some.count())
-            # return await every.all()
-            results: List[Locator] = await marker.all()
+        links: Locator = every.get_by_role('link', name=re.compile(r'\d+'))
+        if await links.count():
+            # print('links number: ', await links.count())
+            # print(links)
+            results: List[Locator] = await links.all()
             await asyncio.sleep(0)
             return results
     return []
@@ -120,41 +117,3 @@ async def parse_groups(nodes: List[Locator]) -> Coroutine[Any, Any, List[ Dict[ 
     return result
 
 
-
-async def parse_result(items: List[Locator]) -> Awaitable[ List[ List[ Tuple[str, str]]]]:
-    """
-    Parse the HTML node passed to it and returns a dict 
-    """
-    seq: List[ List[ Tuple[ str, str]]] = []
-    for result in items:
-        group: List[ Tuple[ str, str]] = []
-        await asyncio.sleep(0)
-        print('title: ', await result.all_inner_texts())
-        # content: str = await result.filter()
-        # title doesn't work
-        tgroup: Locator = result.locator('h3.gs_rt a')
-        title: Tuple[str, str] = 'title', await tgroup.text_content() or 'No title'
-        group.append(title)
-        print('title written')
-        # author doesn't work
-        author: Tuple[str, str] = 'author', await result.locator('div.gs_a').all_inner_texts() or []
-        group.append(author)
-        # abstract works
-        abstract = 'abstract', await result.locator('div.gs_rs').all_inner_texts() or []
-        group.append(abstract)
-        # citation works
-        citation = 'citations', await result.get_by_role('link', name='Cited by').all_inner_texts() or []
-        group.append(citation)
-        # # year doesn't work
-        # year = 'year', await result.locator('.gs_age').all_inner_texts() or ''
-        # group.append(year)
-        # url works
-        # url = 'url', await result.locator('h3.gs_rt a').get_attribute('href') or ''
-        url = 'url', await tgroup.get_attribute('href') or ''
-        group.append(url)
-        seq.append(group)
-    return seq
-
-def display(item: any, filename: str) -> None:
-    with open(filename, 'a') as f:
-        print(item, file=f)
