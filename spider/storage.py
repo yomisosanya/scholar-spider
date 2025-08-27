@@ -1,2 +1,5 @@
-import psycopg 
+# import psycopg
+import sqlite3
+
+
 

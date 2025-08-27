@@ -1,19 +1,22 @@
 import asyncio
-from typing import List, Tuple
+from typing import Final, List, Tuple
 from browse import BrowserChoice, create_browser, create_page, parse_groups, \
 more_results, nav_url, search, visit
 from playwright.async_api import async_playwright, Browser, Locator, Page, \
 Response
 
+GOOGLE_SCHOLAR_URL: Final[str] = 'https://scholar.google.com'
+
 async def app(*, query: str) -> None:
     """
+    
     """
     # TODO: parameter should be a coroutine that returns a list of Locators
     #
     async with async_playwright() as context:
         browser: Browser = await create_browser(BrowserChoice.chromium, context)
         assert browser is not None, 'browser was not created'
-        uri: str = 'https://scholar.google.com'
+        uri: str = GOOGLE_SCHOLAR_URL
         page: Page = await create_page(browser)
         assert page is not None, 'a page was not created'
         res: Response = await visit(uri=uri, page=page)
@@ -33,9 +36,11 @@ async def app(*, query: str) -> None:
         assert len(nodes) > 0, 'more_results returned an empty list'
         print(len(nodes))
         item: Tuple[ int, str] = await nav_url(nodes[4])
-        print(item)
+        # print(item)
+        print(output)   
+
 
 
 if __name__ == '__main__':
-    query: str = 'louis petingi'
+    query: str = 'alexander tzanov'
     asyncio.run(app(query=query))

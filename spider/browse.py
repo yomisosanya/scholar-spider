@@ -1,5 +1,4 @@
 import asyncio, re
-# from collections import OrderedDict
 from collections.abc import Awaitable, Iterable
 from enum import auto, Enum
 from typing import Any, AsyncGenerator, Coroutine, Dict, List, Optional, Union, Tuple
@@ -17,6 +16,18 @@ async def create_browser(
         playwright: Playwright,
         headless: bool = True
         ) -> Browser:
+    """
+    Creates a browser instance
+
+    :param BrowserChoice choice: The preferred browser
+    :param Playwright playwright:
+    :param bool headless: 
+    :returns: A browser instance
+    :rtype Browser
+
+    >>>  async with async_playwright() as playwright:
+    >>>     browser = await create_browser(BrowserChoice.webkit, playwright, False)
+    """
     match choice:
         case BrowserChoice.chromium:
             browser = await playwright.chromium.launch()
@@ -29,6 +40,13 @@ async def create_browser(
 async def create_page(browser: Browser, incognito: bool = False) -> Awaitable[Page]:
     """
     Helper function for creating a new Page object 
+
+    >>> page = await create_page(browser, True)
+
+    :param Browser browser:
+    :param bool incognito:
+    :returns:
+    :rtype Awaitable[Page]:
     """
     if incognito:
         context: BrowserContext = await browser.new_context()
@@ -40,6 +58,13 @@ async def visit(*, uri: str, page: Page) -> Awaitable[Optional[Response]]:
     """
     A light-weight fetch that returns Response object 
     and tries not to open unecessary files
+
+    >>> response = await visit(uri='www.example.com', page=page)
+
+    :param str uri:
+    :param Page page:
+    :returns:
+    :rtype Awaitable[Optional[Response]]:
     """
     result: Optional[Response] = await page.goto(url=uri, wait_until='domcontentloaded')
     await asyncio.sleep(0)
@@ -48,6 +73,14 @@ async def visit(*, uri: str, page: Page) -> Awaitable[Optional[Response]]:
 async def search(page: Page, text: str) -> Awaitable[List[Locator]]:
     """
     Automates the browser the send the query passed to it
+
+    >>> query = 'isaac newton'
+    >>> search = aawait search(page, query)
+
+    :param Page page:
+    :param str text:
+    :returns:
+    :rtype Awaitable[List[Locator]]:
     """
     input: Locator = page.locator('#gs_hdr_tsi')
     await input.press_sequentially(text, delay=10)
@@ -61,10 +94,19 @@ async def search(page: Page, text: str) -> Awaitable[List[Locator]]:
     await asyncio.sleep(0)
     return result
 
-async def nav_url(link: Locator) -> Optional[Tuple[ int, str]]:
+async def nav_url(link: Locator) -> Optional[Tuple[int, str]]:
     """
-    It returns a tuple containing the page number and the page url of the 
-    navigation link locator
+    Returns a tuple containing the page number and the page url of the 
+    navigation link locator. This tuple represents each result page other than the 
+    current result page.
+
+    >>> result_page = await nav_url(locator)
+    >>> (output) --> (2, '/result-page/2/')
+
+    :param Locator link: A navigation link element represented by a locator
+    :returns: A tuple containing the page number found in the element and the href value of the element
+    :rtype: Optional[Tuple[int, str]]
+    :raises playwright._impl._errors.TimeoutError: if the locator passed as an argument cannot locate the link's href attribute
     """
     if await link.count():
         url: str = await link.get_attribute('href')
@@ -75,7 +117,12 @@ async def nav_url(link: Locator) -> Optional[Tuple[ int, str]]:
     return None
 
 async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]]]:
-    """
+    """ 
+
+
+    :param Page page:
+    :returns:
+    :rtype Coroutine[Any, Any, Optional[List[Locator]]]:
     """
     await asyncio.sleep(0)
     parent: Locator = page.locator('#gs_n')
@@ -93,6 +140,10 @@ async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]
 
 async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], None]:
     """
+
+    :param Locator node:
+    :returns:
+    :rtype AsyncGenerator[Tuple[str, List[str]], None]:
     """
     await asyncio.sleep(0)
     link: Locator = node.locator('h3.gs_rt a')
@@ -111,6 +162,10 @@ async def parse_groups(nodes: List[Locator]) -> Coroutine[Any, Any, List[ Dict[ 
     """
     A helper coroutine for parsing a list of query results' locators. It uses parse_group
     on each item on the list
+
+    :param List[Locator] nodes:
+    :returns:
+    :rtype Coroutine[Any, Any, List[Dict[str, str]]]:
     """
     result = [{k: v async for k, v in parse_group(node)} for node in nodes]
     await asyncio.sleep(0)
