@@ -1,7 +1,7 @@
 import asyncio, re
 from collections.abc import Awaitable, Iterable
 from enum import auto, Enum
-from typing import Any, AsyncGenerator, Coroutine, Dict, List, Optional, Union, Tuple
+from typing import Any, AsyncGenerator, Coroutine, Dict, Generator, List, Optional, Union, Tuple
 from urllib.parse import urlparse
 from playwright.async_api import Browser, BrowserContext, BrowserType, Locator, Page, \
 Playwright, Response
@@ -10,6 +10,11 @@ class BrowserChoice(Enum):
     chromium = auto()
     firefox = auto()
     webkit = auto()
+
+
+class DataType(Enum):
+    single = auto()
+    multiple = auto()
 
 async def create_browser(
         choice: BrowserChoice, 
@@ -137,6 +142,14 @@ async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]
             await asyncio.sleep(0)
             return results
     return []
+
+async def parse_each(gen: Generator[Tuple[str, Locator], None, None]) -> AsyncGenerator[Tuple[str, List, None]]:
+    """
+    Generic parser simlar to parse_group
+    """
+    async for key, node in gen():
+        contents: List = await node.all_inner_texts() or []
+        yield key, contents
 
 async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], None]:
     """
