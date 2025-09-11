@@ -38,6 +38,7 @@ async def app(*, query: str) -> None:
         item: Tuple[ int, str] = await nav_url(nodes[4])
         # print(item)
         print(output)   
+        
 
 
 

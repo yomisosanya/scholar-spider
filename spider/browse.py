@@ -143,13 +143,13 @@ async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]
             return results
     return []
 
-async def parse_each(gen: Generator[Tuple[str, Locator], None, None]) -> AsyncGenerator[Tuple[str, List, None]]:
-    """
-    Generic parser simlar to parse_group
-    """
-    async for key, node in gen():
-        contents: List = await node.all_inner_texts() or []
-        yield key, contents
+# async def parse_each(gen: Generator[Tuple[str, Locator], None, None]) -> AsyncGenerator[Tuple[str, List[str]]]:
+#     """
+#     Generic parser simlar to parse_group
+#     """
+#     async for key, node in gen():
+#         contents: List = await node.all_inner_texts() or []
+#         yield key, contents
 
 async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], None]:
     """

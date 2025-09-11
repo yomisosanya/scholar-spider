@@ -1,0 +1,21 @@
+[project]
+name = "spider_scholar"
+version = "1.0.0"
+description = ""
+keywords = ["spider"]
+readme = "README.md"
+authors = [
+    {name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu"}
+]
+maintainers = [
+    {name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu"}
+]
+requires-python = ">=3.12"
+dependencies = [
+    "playwright>=1.53.0",
+    "psycopg[binary]"
+]
+
+# [build-system]
+# requires = ["setuptools", "wheel"]
+# build-backend = "setuptools.build_meta"
