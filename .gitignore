@@ -1,6 +1,5 @@
 # ignore the content of virtual environment folder 
 .venv/*
-!.venv/ .gitkeep
 
 **/*.egg-info/
 **/__pycache__/
