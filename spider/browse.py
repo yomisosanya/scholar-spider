@@ -59,7 +59,7 @@ async def create_page(browser: Browser, incognito: bool = False) -> Awaitable[Pa
     else:
         return await browser.new_page()
  
-async def visit(*, uri: str, page: Page) -> Awaitable[Optional[Response]]:
+async def visit_page(*, uri: str, page: Page) -> Awaitable[Optional[Response]]:
     """
     A light-weight fetch that returns Response object 
     and tries not to open unecessary files
@@ -74,6 +74,19 @@ async def visit(*, uri: str, page: Page) -> Awaitable[Optional[Response]]:
     result: Optional[Response] = await page.goto(url=uri, wait_until='domcontentloaded')
     await asyncio.sleep(0)
     return result
+
+# async def visit(url: str, browser: BrowserChoice = BrowserChoice.chromium):
+#     """
+#     """
+#     match browser:
+#         case BrowserChoice.chromium:
+#             psss
+#         case BrowserChoice.firefox:
+#             pass
+#         case BrowserChoice.webkit:
+#             pass
+#         case _ :
+#             pass
 
 async def search(page: Page, text: str) -> Awaitable[List[Locator]]:
     """
@@ -123,7 +136,7 @@ async def nav_url(link: Locator) -> Optional[Tuple[int, str]]:
 
 async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]]]:
     """ 
-
+    Locates the page's breadcrumbs and returns a list of Locators from it
 
     :param Page page:
     :returns:
@@ -143,13 +156,14 @@ async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]
             return results
     return []
 
-# async def parse_each(gen: Generator[Tuple[str, Locator], None, None]) -> AsyncGenerator[Tuple[str, List[str]]]:
-#     """
-#     Generic parser simlar to parse_group
-#     """
-#     async for key, node in gen():
-#         contents: List = await node.all_inner_texts() or []
-#         yield key, contents
+
+async def parse_each(gen: Generator[Tuple[str, Locator], None, None]) -> AsyncGenerator[Tuple[str, List, None]]:
+    """
+    Generic parser simlar to parse_group
+    """
+    async for key, node in gen():
+        contents: List = await node.all_inner_texts() or []
+        yield key, contents
 
 async def parse_group(node: Locator) -> AsyncGenerator[Tuple[str, List[str]], None]:
     """

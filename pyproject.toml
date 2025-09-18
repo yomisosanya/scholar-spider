@@ -5,13 +5,13 @@ description = ""
 keywords = ["spider"]
 readme = "README.md"
 authors = [
-    {name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu"}
+    { name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu" },
 ]
 maintainers = [
-    {name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu"}
+    { name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu" },
 ]
 requires-python = ">=3.12"
-dependencies = [
-    "playwright>=1.53.0",
-    "psycopg[binary]"
-]
+dependencies = ["playwright>=1.53.0", "psycopg[binary]"]
+
+[project.scripts]
+carrie = 'spider.__main__:main'
