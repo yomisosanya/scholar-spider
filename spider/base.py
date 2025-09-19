@@ -16,10 +16,10 @@ __all__ = ['BrowserChoice', 'BaseBrowser', 'SitePage']
 
 #                                                      State Diagram
 #   
-#   BrowserChoice enum [bc] ---> BaseBrowser.createBrower(bc)
+#   Browser instance [browser] ---> BaseBrowser.create(browser)
 #                                |
 #                                V
-#                      BaseBrowser instance  [bb] + url string [url]  --->  bb.visit(url) <Playwright.Page>
+#                      BaseBrowser instance  [bb] + Playwright.Page page [url]  --->  SitePage.visit(page) <Playwright.Page>
 #                                                                                 |
 #                                                                                 V
 #                                                                       Playwright.Page [page] + Playwright.Response
@@ -38,6 +38,12 @@ class BrowserChoice(Enum):
     firefox = auto()
     webkit = auto()
 
+class SiteError(Exception):
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
 
 class SitePage(ABC):
 
@@ -51,34 +57,18 @@ class SitePage(ABC):
         """
         """
 
-    def __del__(self):
-        """
-        """
-        # page: Page = self.get_page()
-        # asyncio.run(page.close())
 
-    # @property
-    # @abstractmethod
-    # def page(self):
-    #     """
-    #     """
+    @property
+    @abstractmethod
+    def page(self) -> Page:
+        """
+        """
 
     @abstractmethod
     def get_page(self):
         """
         """
 
-    # @property
-    # @abstractmethod
-    # def url(self) -> str:
-    #     """The constant url of the page
-    #     """
-
-    @classmethod
-    @abstractmethod
-    def get_url(cls):
-        """
-        """
 
     @abstractmethod
     async def search(self, query: str) -> Coroutine[Any, Any, Optional[List[Locator]]]:
@@ -106,26 +96,35 @@ class SitePage(ABC):
     @final
     @classmethod
     async def parse_list(cls, nodes):
-        return [result for result in await cls.parse_group(nodes)]
+        results = await cls.parse_group(nodes)
+        return [result async for result in results]
 
 
     # @final
     @classmethod
     async def visit(cls, 
                     browser: Union[Browser, BrowserContext],
-                    incognito: bool = False):
+                    incognito: bool = False,
+                    attempts: int = 1,
+                    delay: float = 10) -> Optional[Self]:
         """
         """
         assert browser is not None, 'NoneType passed instead of Browser to visit()'
         page: Page = await browser.new_page()
         url: str = cls.get_url()
-        # print('the value of url is {}'.format(url))
         # assert isinstance(url, str), "{}.url is not a string".format(cls.__name__)
-        res: Optional[Response] = await page.goto(url=url, wait_until='domcontentloaded')
-        if res:
-            return cls(page, res)
+        for _ in range(attempts):
+            #
+            res: Optional[Response] = await page.goto(url=url, wait_until='domcontentloaded')
+            if res:
+                match res.status:
+                    case 200:
+                        return cls(page, res)
+                    case 429:
+                        raise SiteError(message='status: 429 - Too Many Requests')
+            asyncio.sleep(delay=delay)
+                
     
-
 
 class BaseBrowser:
     """A Helper class that is used to create Playwright.Browsers
@@ -152,25 +151,4 @@ class BaseBrowser:
                     await page.close()
                 await context.close()
             await self._browser.close()
-
-    # @staticmethod
-    # async def create(playwright: Playwright, 
-    #                  choice: BrowserChoice
-    #                  ) -> Self:
-    #     """
-    #     """
-    #     match choice:
-    #         case BrowserChoice.chromium:
-    #             browser = await playwright.chromium.launch()
-    #         case BrowserChoice.firefox:
-    #             browser = await playwright.firefox.launch()
-    #         case BrowserChoice.webkit:
-    #             browser = await playwright.webkit.launch()
-    #         case _ :
-    #             raise ValueError('illegal parameter: ', choice)
-    #     assert browser is not None, 'Browser is not created in BaseBrowser'
-    #     return BaseBrowser(browser)
-
-
-
 

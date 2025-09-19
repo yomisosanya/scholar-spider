@@ -21,22 +21,15 @@ class Scholar(SitePage):
     def __init__(self, page: Page, res: Response):
         self._page = page
         self.response = res
-
-    # @override
-    # @property
-    # def page(self):
-    #     return type(self)._page
+    
+    @override
+    @property
+    def page(self) -> Page:
+        return self._page
 
     @override
     def get_page(self):
         return self._page
-
-    # @override
-    # @property
-    # def url(self):
-    #     """Required property
-    #     """
-    #     return type(self)._url
 
     @override
     @classmethod
@@ -71,7 +64,7 @@ class Scholar(SitePage):
         link: Locator = node.locator('h3.gs_rt a')
         title: str = await link.all_inner_texts()
         yield 'title', title
-        url: str = 'url', await link.get_attribute('href') or ''
+        url: str = await link.get_attribute('href') or ''
         yield 'url', url
         authors: List[str] = await node.locator('div.gs_a').all_inner_texts() or []
         yield 'authors', authors
@@ -79,3 +72,5 @@ class Scholar(SitePage):
         yield 'summary', summary
         citedby: List[str] = await node.get_by_role('link', name='Cited by').all_inner_texts() or []
         yield 'cite-by', citedby
+
+        

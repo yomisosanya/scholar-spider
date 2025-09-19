@@ -6,6 +6,8 @@ keywords = ["spider"]
 readme = "README.md"
 authors = [
     { name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu" },
+    { name = "", email = "" },
+    { name = "", email = "" },
 ]
 maintainers = [
     { name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu" },

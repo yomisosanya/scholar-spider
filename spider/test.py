@@ -64,12 +64,14 @@ async def new_app(*, query: str) -> None:
             # print(res)
             results = await Scholar.parse_group(res)
             print([x async for x in results])
+            # results = await Scholar.parse_list(res)
             # print(results)
   
 
 
 if __name__ == '__main__':
-    query: str = 'alexander tzanov'
+    # query: str = 'alexander tzanov'
+    query = 'louis petingi'
     # print(Scholar.get_url())
     # asyncio.run(app(query=query))
     asyncio.run(new_app(query=query))
