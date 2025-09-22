@@ -14,11 +14,11 @@ Create a virtual environment folder:
 
 Activate the virtual environment
 
-(unix)
+Unix-like systems
 
 `source .venv/bin/activate`
 
-(windows)
+Windows
 
 `source .venv/Scripts/activate`
 
