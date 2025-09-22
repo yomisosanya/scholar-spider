@@ -33,10 +33,10 @@ __all__ = ['BrowserChoice', 'BaseBrowser', 'SitePage']
 #
 #                      
 
-class BrowserChoice(Enum):
-    chromium = auto()
-    firefox = auto()
-    webkit = auto()
+# class BrowserChoice(Enum):
+#     chromium = auto()
+#     firefox = auto()
+#     webkit = auto()
 
 class SiteError(Exception):
 
@@ -71,7 +71,10 @@ class SitePage(ABC):
 
 
     @abstractmethod
-    async def search(self, query: str) -> Coroutine[Any, Any, Optional[List[Locator]]]:
+    async def search(self,
+                      query: str,
+                      delay: float = 10
+                      ) -> Coroutine[Any, Any, Optional[List[Locator]]]:
         """
         """
 
@@ -105,23 +108,26 @@ class SitePage(ABC):
     async def visit(cls, 
                     browser: Union[Browser, BrowserContext],
                     incognito: bool = False,
-                    attempts: int = 1,
-                    delay: float = 10) -> Optional[Self]:
+                    attempts: int = 2,
+                    delay: float = 10,
+                    verbose: bool = False) -> Optional[Self]:
         """
         """
         assert browser is not None, 'NoneType passed instead of Browser to visit()'
         page: Page = await browser.new_page()
         url: str = cls.get_url()
         # assert isinstance(url, str), "{}.url is not a string".format(cls.__name__)
-        for _ in range(attempts):
-            #
+        for count in range(attempts):
+            if verbose:
+                print('attempt #{}'.format(count+1))
             res: Optional[Response] = await page.goto(url=url, wait_until='domcontentloaded')
-            if res:
-                match res.status:
-                    case 200:
-                        return cls(page, res)
-                    case 429:
-                        raise SiteError(message='status: 429 - Too Many Requests')
+            match res.status:
+                case 200:
+                    return cls(page, res)
+                case 429:
+                    raise SiteError(message='status: 429 - Too Many Requests')
+                case _:
+                    pass
             asyncio.sleep(delay=delay)
                 
     

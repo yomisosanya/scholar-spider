@@ -1,6 +1,8 @@
 ## Generic Web Crawler
 
-###  Development Installation
+### Development Installation
+
+<div>
 
 `git clone https://github.com/yomisosanya/scholar-spider.git`
 
@@ -12,13 +14,30 @@ Create a virtual environment folder:
 
 Activate the virtual environment
 
+(unix)
+
 `source .venv/bin/activate`
 
-Install the dependencies
+(windows)
+
+`source .venv/Scripts/activate`
+
+Install all dependencies (use a terminal that has Bash installed in it)
+
+`bash requirement.sh`
+
+<!-- Install the dependencies
 
 `pip install -e . `
 
 Install the browsers
 
-`playwright install`
+`playwright install` -->
+</div>
 
+<div>
+<h3> Usage </h3>
+
+`python test.py`
+
+</div>

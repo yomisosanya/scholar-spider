@@ -2,8 +2,10 @@
 
 import asyncio
 from typing import Dict, Final, List, Tuple
+#
 # from browse import BrowserChoice, create_browser, create_page, parse_groups, \
 # more_results, nav_url, search, visit_page
+#
 from playwright.async_api import async_playwright, Browser, Locator, Page, \
 Response
 
@@ -56,22 +58,24 @@ async def new_app(*, query: str) -> None:
         async with BaseBrowser(browser) as helper:
             #
             sch: Scholar = await Scholar.visit(helper.browser)
-            # headers = await sch.response.headers_array()
-            # print(headers[:5])
+            headers = await sch.response.headers_array()
+            print(headers[:10])
+            print('http status code: {}'.format(sch.response.status))
             res: List[Locator] = await sch.search(query=query)
             # assert res is not None, "search return None"
             # assert len(res) != 0, "search returned an empty list"
             # print(res)
-            results = await Scholar.parse_group(res)
-            print([x async for x in results])
-            # results = await Scholar.parse_list(res)
-            # print(results)
+            # results = await Scholar.parse_group(res)
+            # print([x async for x in results])
+            results = await Scholar.parse_list(res)
+            print(results)
   
 
 
 if __name__ == '__main__':
     # query: str = 'alexander tzanov'
-    query = 'louis petingi'
-    # print(Scholar.get_url())
-    # asyncio.run(app(query=query))
-    asyncio.run(new_app(query=query))
+    query = ['louis petingi', 'richard alba', 'alexander tzanov', 'robert alfano', 'beth baron']
+
+
+    # asyncio.run(app(query=query[4]))
+    asyncio.run(new_app(query=query[3]))

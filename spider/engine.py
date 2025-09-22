@@ -21,6 +21,7 @@ class Scholar(SitePage):
     def __init__(self, page: Page, res: Response):
         self._page = page
         self.response = res
+        self._query = None 
     
     @override
     @property
@@ -38,22 +39,47 @@ class Scholar(SitePage):
 
     
     @override
-    async def search(self, query) -> Optional[List[Locator]]:
+    async def search(self,
+                      query,
+                      delay = 5
+                      ) -> List[Locator]:
         """
         """
-        page: Page = self._page
-        input: Locator = page.locator('#gs_hdr_tsi')
-        await input.press_sequentially(query, delay=10.0)
-        submit: Locator = page.locator('#gs_hdr_tsb')
-        await submit.click()
-        await page.wait_for_load_state('domcontentloaded')
-        results: Optional[List[Locator]] = await page.locator('div.gs_ri').all()
-        return results
+        match query:     
+            case q if isinstance(x, str):
+                # queury 
+                match q:
+                    case '':
+                        return []
+                    case x if x == self._query:
+                        return self._first
+                    case _:
+                        #
+                        self._first = None
+                        self._others = None
+                        page: Page = self._page
+                        input: Locator = page.locator('#gs_hdr_tsi')
+                        await input.press_sequentially(query, delay=delay)
+                        submit: Locator = page.locator('#gs_hdr_tsb')
+                        await submit.click()
+                        await asyncio.sleep(0)
+                        await page.wait_for_load_state('domcontentloaded')
+                        result_page: Locator = page.locator('div.gs_ri')
+
+                        await page.wait_for_load_state('load')
+                        self._first: List[Locator] = await result_page.all()
+                        return self._first
+            case e:
+                # all other types are rejected
+                raise AttributeError(name='query must be a string, {} found'.format(type(e)))
     
     @override
-    async def other_pages():
+    async def other_pages(self):
         """
         """
+        if self._others is None:
+            pass
+        #
 
     @override
     @staticmethod
@@ -73,4 +99,3 @@ class Scholar(SitePage):
         citedby: List[str] = await node.get_by_role('link', name='Cited by').all_inner_texts() or []
         yield 'cite-by', citedby
 
-        
