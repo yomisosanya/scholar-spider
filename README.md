@@ -14,7 +14,7 @@ Create a virtual environment folder:
 
 Activate the virtual environment
 
-Unix-like systems
+Unix-like systems (Ubuntu is the preferred distribution)
 
 `source .venv/bin/activate`
 
