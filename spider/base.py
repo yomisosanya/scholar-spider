@@ -13,25 +13,7 @@ from playwright.async_api import Browser, BrowserContext, Locator, Page, Playwri
 
 
 __all__ = ['BrowserChoice', 'BaseBrowser', 'SitePage']
-
-#                                                      State Diagram
-#   
-#   Browser instance [browser] ---> BaseBrowser.create(browser)
-#                                |
-#                                V
-#                      BaseBrowser instance  [bb] + Playwright.Page page [url]  --->  SitePage.visit(page) <Playwright.Page>
-#                                                                                 |
-#                                                                                 V
-#                                                                       Playwright.Page [page] + Playwright.Response
-#                                                                                 |
-#                                                                                 V
-#                      SitePage instance [site]         <---            SitePage.create(page) <SitePage>
-#                      +  query string [query]
-#                               |
-#                               V
-#                      site.search(query) <List> or None
-#
-#                      
+                  
 
 class BrowserChoice(Enum):
     chromium = auto()
