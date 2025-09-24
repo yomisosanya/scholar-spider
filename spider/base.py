@@ -33,10 +33,10 @@ __all__ = ['BrowserChoice', 'BaseBrowser', 'SitePage']
 #
 #                      
 
-# class BrowserChoice(Enum):
-#     chromium = auto()
-#     firefox = auto()
-#     webkit = auto()
+class BrowserChoice(Enum):
+    chromium = auto()
+    firefox = auto()
+    webkit = auto()
 
 class SiteError(Exception):
 
@@ -56,6 +56,9 @@ class SitePage(ABC):
     def __init__(self, page: Page, res: Response) -> Self:
         """
         """
+        self._page = page
+        self.response = res
+        self._query = None
 
 
     @property

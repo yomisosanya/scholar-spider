@@ -11,6 +11,7 @@ Response
 
 from base import BaseBrowser
 from engine import Scholar
+from util import google_search, search
 
 # GOOGLE_SCHOLAR_URL: Final[str] = 'https://scholar.google.com'
 
@@ -73,9 +74,10 @@ async def new_app(*, query: str) -> None:
 
 
 if __name__ == '__main__':
-    # query: str = 'alexander tzanov'
-    query = ['louis petingi', 'richard alba', 'alexander tzanov', 'robert alfano', 'beth baron']
+    query: str = 'alexander tzanov'
+    # query = ['louis petingi', 'richard alba', 'alexander tzanov', 'robert alfano', 'beth baron']
 
 
     # asyncio.run(app(query=query[4]))
-    asyncio.run(new_app(query=query[3]))
+    # asyncio.run(new_app(query=query[3]))
+    print(google_search(query))

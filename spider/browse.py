@@ -6,10 +6,10 @@ from urllib.parse import urlparse
 from playwright.async_api import Browser, BrowserContext, BrowserType, Locator, Page, \
 Playwright, Response
 
-class BrowserChoice(Enum):
-    chromium = auto()
-    firefox = auto()
-    webkit = auto()
+# class BrowserChoice(Enum):
+#     chromium = auto()
+#     firefox = auto()
+#     webkit = auto()
 
 
 class DataType(Enum):

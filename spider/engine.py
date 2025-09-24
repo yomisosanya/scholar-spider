@@ -19,9 +19,10 @@ class Scholar(SitePage):
 
     @override
     def __init__(self, page: Page, res: Response):
-        self._page = page
-        self.response = res
-        self._query = None 
+        super.__init__(page, res)
+        # self._page = page
+        # self.response = res
+        # self._query = None 
     
     @override
     @property
