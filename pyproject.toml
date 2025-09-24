@@ -5,12 +5,14 @@ description = ""
 keywords = ["spider"]
 readme = "README.md"
 authors = [
-    { name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu" },
-    # { name = "", email = "" },
-    # { name = "", email = "" },
+    {name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu" },
+    {name = "Xia Jie Ou", email = "Xiajie.Ou@CIX.CSI.CUNY.EDU"},
+    {name= "Marc Anthony Flores Mendoza", email="marc.floresmendoza@cix.csi.cuny.edu"}
 ]
 maintainers = [
-    { name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu" },
+    {name = "Abayomi Sosanya", email = "abayomi.sosanya@cix.csi.cuny.edu" },
+    {name = "Xia Jie Ou", email = "Xiajie.Ou@CIX.CSI.CUNY.EDU"},
+    {name= "Marc Anthony Flores Mendoza", email="marc.floresmendoza@cix.csi.cuny.edu"}
 ]
 requires-python = ">=3.12"
 dependencies = ["playwright>=1.53.0", "psycopg[binary]"]

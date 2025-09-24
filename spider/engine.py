@@ -19,7 +19,7 @@ class Scholar(SitePage):
 
     @override
     def __init__(self, page: Page, res: Response):
-        super.__init__(page, res)
+        super().__init__(page, res)
         # self._page = page
         # self.response = res
         # self._query = None 
@@ -47,7 +47,7 @@ class Scholar(SitePage):
         """
         """
         match query:     
-            case q if isinstance(x, str):
+            case q if isinstance(q, str):
                 # queury 
                 match q:
                     case '':

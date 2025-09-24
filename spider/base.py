@@ -72,6 +72,13 @@ class SitePage(ABC):
         """
         """
 
+    
+    @classmethod
+    @abstractmethod
+    def get_url(cls):
+        """
+        """
+
 
     @abstractmethod
     async def search(self,
@@ -88,7 +95,8 @@ class SitePage(ABC):
 
     @staticmethod
     @abstractmethod
-    async def parse_each(node: Locator) -> AsyncGenerator[Tuple[str, List]]:
+    # async def parse_each(node: Locator) -> AsyncGenerator[Tuple[str, List]]:
+    async def parse_each(node: Locator) -> AsyncGenerator:
         """
         """
 
