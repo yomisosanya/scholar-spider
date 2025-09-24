@@ -1,7 +1,6 @@
-<h2>Code Examples</h2>
+## Code Examples
 
 <div>
-
 <p>Sample code:</p>
 
 <code>
