@@ -5,23 +5,6 @@ from engine import Scholar
 from typing import List
 
 
-
-# async def _Xchoose_browser(pa
-#                       context,
-#                      choice: BrowserChoice = BrowserChoice.chromium):
-#     match choice:
-#         case BrowserChoice.chromium:
-#             browser: Browser = await playwright.chromium.launch()
-#         case BrowserChoice.firefox:
-#             browser: Browser = await playwright.firefox.launch()
-#         case BrowserChoice.webkit:
-#             browser: Browser = await playwright.webkit.launch()
-#         case _: 
-#             raise AttributeError(name='BrowserChoice type expected {} found'.format(type(choice)))
-#     async with BaseBrowser(browser) as helper:
-#             return await sitepage.visit(helper.browser)
-
-
 async def _choose_browser(context, choice):
     match choice:
         case BrowserChoice.chromium:
