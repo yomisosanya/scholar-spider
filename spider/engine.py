@@ -79,8 +79,14 @@ class Scholar(SitePage):
         """
         """
         if self._others is None:
-            pass
-        #
+            #
+            parent: Locator = self._page.locator('#gs_n')
+            every: Locator = parent.get_by_role('cell')
+            if await every.count():
+                links: Locator = every.get_by_role('link', name=re.compile(r'\d+'))
+                if await links.count():
+                    self._others = await links.all()
+        return self._others
 
     @override
     @staticmethod
