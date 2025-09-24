@@ -3,7 +3,8 @@
 <div>
 <p>Sample code:</p>
 
-<code>
+<pre>
+ <code>
 from util import google_search
 
 query = "alexander tsanov"
@@ -12,5 +13,6 @@ results = google_search(query)
 for result in results:
     print(result)
 
-</code>
+ </code>
+</pre>
 </div>
