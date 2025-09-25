@@ -6,7 +6,7 @@ from pathlib import Path
 
 import json 
 #
-import browse 
+import browse
 from browse import create_browser, create_page, parse_groups, \
 more_results, nav_url, visit_page
 #
@@ -17,7 +17,7 @@ from base import BrowserChoice
 from base import BaseBrowser
 from engine import Scholar
 from util import google_search, search
-from view import print_list, load_data, store_data
+from view import load_data, store_data, convert_to_csv 
 
 GOOGLE_SCHOLAR_URL: Final[str] = 'https://scholar.google.com'
 
@@ -107,5 +107,5 @@ if __name__ == '__main__':
     # result = google_search(query[1])
     # # result = dict_list
     # store_data(result, Path('../target/output.json'))
-    data = load_data()
-    print_list(data)
+    data = load_data(Path('../target/output.json'))
+    convert_to_csv(data)

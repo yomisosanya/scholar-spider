@@ -1,24 +1,26 @@
 
+import csv
 import json
 from pathlib import Path
 from typing import Dict, List
 from textwrap import wrap
 
 
-def print_list(table: List[Dict]) -> None:
-    """
-    """
-    ws_len = 15
-    for row in table:
-        for key, value in row.items():
-            print('{}'.format(key), end='')
-            txt: List = wrap(value, width=50)
-            space = ' '*(ws_len - len(key))
-            print('{}{}'.format(space, txt[0]))
-            for line in txt[1:]:
-                print('{}{}'.format(' '*ws_len, line))
-        print('\n')
-    return
+#TODO: fix errors in this function
+# def print_list(table: List[Dict]) -> None:
+#     """
+#     """
+#     ws_len = 15
+#     for row in table:
+#         for key, value in row.items():
+#             print('{}'.format(key), end='')
+#             txt: List = wrap(value, width=50)
+#             space = ' '*(ws_len - len(key))
+#             print('{}{}'.format(space, txt[0]))
+#             for line in txt[1:]:
+#                 print('{}{}'.format(' '*ws_len, line))
+#         print('\n')
+#     return
 
 def store_data(data, filename=Path('../target/data.json')):
     with open(filename, 'w') as f:
@@ -31,4 +33,12 @@ def load_data(filename=Path('../target/data.json')):
     return data
     
 
-# if __name__ == '__main__':
+def convert_to_csv(data: List[Dict], filename=Path('../target/data.csv')) -> None:
+    """
+    """
+    with open(filename, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=data[0].keys())
+        writer.writeheader()
+        for row in data:
+            writer.writerow(row)    
+    return
