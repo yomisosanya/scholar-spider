@@ -17,7 +17,7 @@ from base import BrowserChoice
 from base import BaseBrowser
 from engine import Scholar
 from util import google_search, search
-from view import print_list, store_data
+from view import print_list, load_data, store_data
 
 GOOGLE_SCHOLAR_URL: Final[str] = 'https://scholar.google.com'
 
@@ -104,6 +104,8 @@ if __name__ == '__main__':
     # asyncio.run(new_app(query=query[3]))
     # print(google_search(query))
     # print('\n')
-    result = google_search(query[0])
+    # result = google_search(query[0])
+    result = dict_list
     store_data(result)
-    # print_list(dict_list)
+    data = load_data()
+    print_list(data)

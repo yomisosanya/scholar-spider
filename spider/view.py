@@ -25,4 +25,10 @@ def store_data(data, filename=Path('../target/data.json')):
         json.dump(data, f)
     return
 
+def load_data(filename=Path('../target/data.json')):
+    with open(filename, 'r') as f:
+        data = json.load(f)
+    return data
+    
+
 # if __name__ == '__main__':
