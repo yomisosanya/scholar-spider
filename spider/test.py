@@ -104,8 +104,8 @@ if __name__ == '__main__':
     # asyncio.run(new_app(query=query[3]))
     # print(google_search(query))
     # print('\n')
-    result = google_search(query[0])
-    # result = dict_list
-    store_data(result)
+    # result = google_search(query[1])
+    # # result = dict_list
+    # store_data(result, Path('../target/output.json'))
     data = load_data()
     print_list(data)
