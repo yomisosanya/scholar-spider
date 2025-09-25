@@ -24,7 +24,14 @@ Windows
 
 Install all dependencies (use a terminal that has Bash installed in it)
 
-`bash requirement.sh`
+`(.venv)` represents the virtual environment, when it is active
+
+`(.venv) python -m pip install --upgrade pip`
+
+`(.venv) pip install -e .`
+
+`(.venv) playwright install`
+
 
 <!-- Install the dependencies
 
