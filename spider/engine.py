@@ -72,7 +72,8 @@ class Scholar(SitePage):
                         return self._first
             case e:
                 # all other types are rejected
-                raise AttributeError(name='query must be a string, {} found'.format(type(e)))
+                msg = 'query must be a string, {} found'.format(type(e))
+                raise AttributeError(msg)
     
     @override
     async def other_pages(self):

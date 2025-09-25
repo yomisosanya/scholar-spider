@@ -120,7 +120,7 @@ class SitePage(ABC):
                 case 429:
                     raise SiteError(message='status: 429 - Too Many Requests')
                 case _:
-                    pass
+                    raise SiteError(message='status: {} - {}'.format(res.status, res.status_text))
             asyncio.sleep(delay=delay)
                 
     

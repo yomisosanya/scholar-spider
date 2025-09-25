@@ -3,6 +3,7 @@ from collections.abc import Awaitable, Iterable
 from enum import auto, Enum
 from typing import Any, AsyncGenerator, Coroutine, Dict, Generator, List, Optional, Union, Tuple
 from urllib.parse import urlparse
+from base import BrowserChoice
 from playwright.async_api import Browser, BrowserContext, BrowserType, Locator, Page, \
 Playwright, Response
 
@@ -12,9 +13,9 @@ Playwright, Response
 #     webkit = auto()
 
 
-class DataType(Enum):
-    single = auto()
-    multiple = auto()
+# class DataType(Enum):
+#     single = auto()
+#     multiple = auto()
 
 async def create_browser(
         choice: BrowserChoice, 
@@ -157,7 +158,7 @@ async def more_results(page: Page) -> Coroutine[Any, Any, Optional[List[Locator]
     return []
 
 
-async def parse_each(gen: Generator[Tuple[str, Locator], None, None]) -> AsyncGenerator[Tuple[str, List, None]]:
+async def parse_each(gen: Generator) -> AsyncGenerator:
     """
     Generic parser simlar to parse_group
     """

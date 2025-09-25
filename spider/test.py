@@ -2,53 +2,58 @@
 
 import asyncio
 from typing import Dict, Final, List, Tuple
+from pathlib import Path
+
+import json 
 #
-# from browse import BrowserChoice, create_browser, create_page, parse_groups, \
-# more_results, nav_url, search, visit_page
+import browse 
+from browse import create_browser, create_page, parse_groups, \
+more_results, nav_url, visit_page
 #
 from playwright.async_api import async_playwright, Browser, Locator, Page, \
 Response
 
+from base import BrowserChoice
 from base import BaseBrowser
 from engine import Scholar
 from util import google_search, search
-from view import print_list
+from view import print_list, store_data
 
-# GOOGLE_SCHOLAR_URL: Final[str] = 'https://scholar.google.com'
+GOOGLE_SCHOLAR_URL: Final[str] = 'https://scholar.google.com'
 
-# async def app(*, query: str) -> None:
-#     """
+async def app(*, query: str) -> None:
+    """
     
-#     """
-#     # TODO: parameter should be a coroutine that returns a list of Locators
-#     #
-#     async with async_playwright() as context:
-#         browser: Browser = await create_browser(BrowserChoice.chromium, context)
-#         assert browser is not None, 'browser was not created'
-#         uri: str = GOOGLE_SCHOLAR_URL
-#         page: Page = await create_page(browser)
-#         assert page is not None, 'a page was not created'
-#         res: Response = await visit_page(uri=uri, page=page)
-#         assert res is not None, 'possible network connection problems'
-#         await page.wait_for_load_state('domcontentloaded')
-#         # search only after the DOM is loaded
-#         results: List[Locator] = await search(page, text=query)
-#         assert results is not None, 'search returned None instead of a locator'
-#         assert len(results) > 0, 'search returned an empt list of locators'
-#         output: List[dict] = await parse_groups(results)
-#         # display output
-#         # print(output)
-#         print(output[2])
-#         await asyncio.sleep(0)
-#         nodes: List[Locator] = await more_results(page)
-#         assert nodes is not None, 'more_result return None instead of an empty list' 
-#         assert len(nodes) > 0, 'more_results returned an empty list'
-#         print(len(nodes))
-#         item: Tuple[ int, str] = await nav_url(nodes[4])
-#         # print(item)
-#         print(output)  
-#         print('\n\n\n\n')
-#         print(output[2]) 
+    """
+    # TODO: parameter should be a coroutine that returns a list of Locators
+    #
+    async with async_playwright() as context:
+        browser: Browser = await create_browser(BrowserChoice.chromium, context)
+        assert browser is not None, 'browser was not created'
+        uri: str = GOOGLE_SCHOLAR_URL
+        page: Page = await create_page(browser)
+        assert page is not None, 'a page was not created'
+        res: Response = await visit_page(uri=uri, page=page)
+        assert res is not None, 'possible network connection problems'
+        await page.wait_for_load_state('domcontentloaded')
+        # search only after the DOM is loaded
+        results: List[Locator] = await browse.search(page, text=query)
+        assert results is not None, 'search returned None instead of a locator'
+        assert len(results) > 0, 'search returned an empt list of locators'
+        output: List[dict] = await parse_groups(results)
+        # display output
+        # print(output)
+        print(output[2])
+        await asyncio.sleep(0)
+        nodes: List[Locator] = await more_results(page)
+        assert nodes is not None, 'more_result return None instead of an empty list' 
+        assert len(nodes) > 0, 'more_results returned an empty list'
+        print(len(nodes))
+        item: Tuple[ int, str] = await nav_url(nodes[4])
+        # print(item)
+        print(output)  
+        print('\n\n\n\n')
+        print(output[2]) 
         
 
 async def new_app(*, query: str) -> None:
@@ -91,13 +96,14 @@ dict_list = [
 
 
 if __name__ == '__main__':
-    query: str = 'alexander tzanov'
-    # query = ['louis petingi', 'richard alba', 'alexander tzanov', 'robert alfano', 'beth baron']
+    # query: str = 'alexander tzanov'
+    query = ['louis petingi', 'richard alba', 'alexander tzanov', 'robert alfano', 'beth baron']
 
 
     # asyncio.run(app(query=query[4]))
     # asyncio.run(new_app(query=query[3]))
     # print(google_search(query))
     # print('\n')
-    result = google_search(query)
-    print_list(result)
+    result = google_search(query[0])
+    store_data(result)
+    # print_list(dict_list)
