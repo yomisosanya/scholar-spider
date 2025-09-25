@@ -78,11 +78,11 @@ async def new_app(*, query: str) -> None:
             print(results)
 
 
-def print_each(items: List):
-    for item in items:
-        print(item)
-        print('\n')
-        return
+# def print_each(items: List):
+#     for item in items:
+#         print(item)
+#         print('\n')
+#         return
     
 dict_list = [
         {'title': 'A novel algorithm for the detection of protein complexes with the breadth first search0',
