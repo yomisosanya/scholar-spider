@@ -10,9 +10,9 @@ def print_list(table: List[Dict]) -> None:
     for row in table:
         for key, value in row.items():
             print('{}'.format(key), end='')
-            txt: List = wrap(value, width=70)
+            txt: List = wrap(value, width=22)
             space = ' '*(ws_len - len(key))
-            print('{}{}'.format(' '*9, txt[0]))
+            print('{}{}'.format(space, txt[0]))
             for line in txt[1:]:
                 print('{}{}'.format(' '*ws_len, line))
         print('\n')

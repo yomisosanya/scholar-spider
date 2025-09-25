@@ -78,14 +78,26 @@ def print_each(items: List):
         print(item)
         print('\n')
         return
+    
+dict_list = [
+        {'title': 'A novel algorithm for the detection of protein complexes with the breadth first search0',
+         'link': 'https://scholar.google.com/scholar?cluster=13763170924097322219&hl=en&as_sdt=0'},
+        {'authors': 'Louis Petingi, Richard Alba, Alexander Tzanov, Robert Alfano, Beth Baron'},
+        {'source': 'Bioinformatics (Oxford, England) (2020)'},
+        {'link': 'https://doi.org/10.1093/bioinformatics/btaa1017'},
+        {'cited by': 'Cited by 10'},
+        {'related': 'Related articles'},
+        {'all 5': 'All 5 versions'}]
+
 
 if __name__ == '__main__':
-    # query: str = 'alexander tzanov'
-    query = ['louis petingi', 'richard alba', 'alexander tzanov', 'robert alfano', 'beth baron']
+    query: str = 'alexander tzanov'
+    # query = ['louis petingi', 'richard alba', 'alexander tzanov', 'robert alfano', 'beth baron']
 
 
     # asyncio.run(app(query=query[4]))
     # asyncio.run(new_app(query=query[3]))
     # print(google_search(query))
     # print('\n')
-    print_each(google_search(query[3]))
+    result = google_search(query)
+    print_list(result)
