@@ -1,7 +1,10 @@
 -- execute this file only during installation
 
-CREATE DATABASE cuny_research_record;
+-- CREATE DATABASE cuny_research_record;
 
+-- referenced by the following table(s):
+--                           1. affliation
+--                           2. research
 CREATE TABLE author (
     author_id INT PRIMARY KEY,
     first_name VARCHAR(30),
@@ -12,8 +15,8 @@ CREATE TABLE author (
 CREATE TABLE paper (
     paper_id INT PRIMARY KEY,
     title TEXT,
-    url,
-    year
+    url VARCHAR(100),
+    year YEAR
 );
 
 CREATE TABLE research (
@@ -24,6 +27,8 @@ CREATE TABLE research (
     author_id REFERENCES author.author_id
 );
 
+-- referenced by the following table(s):
+--                            1. affliation
 CREATE TABLE college (
     college_id INT PRIMARY KEY,
     college_name VARCHAR(50) NOT NULL,
@@ -34,11 +39,14 @@ CREATE TABLE college (
 
 CREATE TABLE affliation (
     college_id INT,
-    author_id INT
+    author_id INT,
+    PRIMARY KEY (college_id, author_id)
+    college_id REFERENCES college.college_id
+    author_id REFERENCES author.author_id
 );
 
 CREATE TABLE cited_by (
-    paper_id
+    paper_id INT
 );
 
 
