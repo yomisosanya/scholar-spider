@@ -2,10 +2,10 @@ from argparse import ArgumentParser
 
 # The CARRIE Project
 
-# CUNY
+# HPCC
 # Automated
 # Research
-# Indexer
+# Paper
 # Explorer
 
 def main():

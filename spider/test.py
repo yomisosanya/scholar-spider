@@ -104,8 +104,18 @@ if __name__ == '__main__':
     # asyncio.run(new_app(query=query[3]))
     # print(google_search(query))
     # print('\n')
-    # result = google_search(query[1])
-    # # result = dict_list
+     # # result = dict_list
+
+
+    result = google_search(query[1])
+    json_path = Path('../target/google.json')
+    csv_path = Path('../target/google.csv')
+    # store data as json
+    store_data(result, json_path)
+    data = load_data(json_path)
+    convert_to_csv(data, csv_path)
+
     # store_data(result, Path('../target/output.json'))
-    data = load_data(Path('../target/output.json'))
-    convert_to_csv(data)
+    # data = load_data(Path('../target/output.json'))
+    
+   
