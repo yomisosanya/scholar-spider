@@ -1,0 +1,8 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+[remote "origin"]
+	url = gitea@10.10.1.199:HPCC-Scout/scholar-spider.git
+	fetch = +refs/*:refs/*
+	mirror = true
