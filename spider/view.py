@@ -23,12 +23,12 @@ from textwrap import wrap
 #     return
 
 def store_data(data, filename=Path('../target/data.json')):
-    with open(filename, 'w') as f:
+    with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f)
     return
 
 def load_data(filename=Path('../target/data.json')):
-    with open(filename, 'r') as f:
+    with open(filename, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return data
     
@@ -36,9 +36,16 @@ def load_data(filename=Path('../target/data.json')):
 def convert_to_csv(data: List[Dict], filename=Path('../target/data.csv')) -> None:
     """
     """
-    with open(filename, 'w') as f:
+    with open(filename, 'w', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=data[0].keys())
         writer.writeheader()
         for row in data:
             writer.writerow(row)    
     return
+
+def read_csv(filename, delimiter=','):
+    """Reads a csv file and returns a list of dictionaries"""
+    with open(filename, 'r', encoding='utf-8') as f:
+        rows = csv.DictReader(f, delimiter=delimiter)
+        result = list(rows)
+    return result

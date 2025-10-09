@@ -17,7 +17,7 @@ from base import BrowserChoice
 from base import BaseBrowser
 from engine import Scholar
 from util import google_search, search
-from view import load_data, store_data, convert_to_csv 
+from view import load_data, store_data, convert_to_csv, read_csv
 
 GOOGLE_SCHOLAR_URL: Final[str] = 'https://scholar.google.com'
 
@@ -107,13 +107,16 @@ if __name__ == '__main__':
      # # result = dict_list
 
 
-    result = google_search(query[1])
+    # result = google_search(query[1])
     json_path = Path('../target/google.json')
     csv_path = Path('../target/google.csv')
     # store data as json
-    store_data(result, json_path)
+    # store_data(result, json_path)
     data = load_data(json_path)
     convert_to_csv(data, csv_path)
+    data = read_csv(csv_path)
+    print(data)
+
 
     # store_data(result, Path('../target/output.json'))
     # data = load_data(Path('../target/output.json'))

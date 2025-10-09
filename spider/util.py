@@ -85,3 +85,7 @@ def google_search(query: str, choice: BrowserChoice = BrowserChoice.chromium):
     """
     """
     return search(query=query, choice=choice, sitepage=Scholar)
+
+
+
+
