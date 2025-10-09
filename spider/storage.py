@@ -3,7 +3,7 @@ from pathlib import Path
 import psycopg as pg
 
 
-def create_db(conn: pg.Connection, schema_path: str, dbname: str):
+def create_db(conn: pg.Connection, dbname: str, schema_path: str = 'schema.sql'):
     with conn.cursor as cursor:
         with open(Path(schema_path), 'r') as f:
             cursor.execute('CREATE DATABASE {};'.format(dbname))
@@ -12,15 +12,8 @@ def create_db(conn: pg.Connection, schema_path: str, dbname: str):
     return
 
 
-def insert_author():
+def create_profile():
     pass
 
 def insert_paper():
     pass
-
-
-
-
-
-
-

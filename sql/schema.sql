@@ -1,6 +1,9 @@
 -- execute this file only during installation
 
--- CREATE DATABASE cuny_research_record;
+CREATE DATABASE cuny_research_record;
+
+USE DATABASE cuny_research_record;
+
 
 -- referenced by the following table(s):
 --                           1. affliation
